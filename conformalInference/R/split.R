@@ -72,7 +72,7 @@
 
 conformal.pred.split = function(x, y, x0, train.fun, predict.fun, alpha=0.1,
   mad.train.fun=NULL, mad.predict.fun=NULL, split=NULL, seed=NULL,
-  verbose=FALSE, returnModels=FALSE) {
+  verbose=FALSE, returnModels=FALSE,malpha=NULL) {
 
   # Set up data
   x = as.matrix(x)
@@ -141,12 +141,22 @@ conformal.pred.split = function(x, y, x0, train.fun, predict.fun, alpha=0.1,
     q = conformal.quantile(sort(res[,l]),alpha)
     lo[,l] = pred[,l] - q * mad.x0
     up[,l] = pred[,l] + q * mad.x0
+    
+    quantiles=c()
+    if (!is.null(malpha))  
+      for (a in malpha) {
+        quantiles=rbind(quantiles,c(a,conformal.quantile(sort(res[,l]),a)))
+      }
+    else {
+      quantiles=c(alpha,q)
+    }
   }
  
   outcome = list(pred=pred,lo=lo,up=up,fit=fit,split=i1)
-  models=list(model=out,ncmeasure=mad.out,alpha=alpha,quantile=q, predict.fun=predict.fun, mad.predict.fun=mad.predict.fun)
-  outcome$models = models
-
+  if (returnModels) {
+    models=list(model=out,ncmeasure=mad.out,quantiles=quantiles, predict.fun=predict.fun, mad.predict.fun=mad.predict.fun)
+    outcome$models = models
+  }
   return (outcome)
 }
 
