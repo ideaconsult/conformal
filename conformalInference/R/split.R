@@ -72,7 +72,7 @@
 
 conformal.pred.split = function(x, y, x0, train.fun, predict.fun, alpha=0.1,
   mad.train.fun=NULL, mad.predict.fun=NULL, split=NULL, seed=NULL,
-  verbose=FALSE) {
+  verbose=FALSE, returnModels=FALSE) {
 
   # Set up data
   x = as.matrix(x)
@@ -143,5 +143,22 @@ conformal.pred.split = function(x, y, x0, train.fun, predict.fun, alpha=0.1,
     up[,l] = pred[,l] + q * mad.x0
   }
  
-  return(list(pred=pred,lo=lo,up=up,fit=fit,split=i1))
+  outcome = list(pred=pred,lo=lo,up=up,fit=fit,split=i1)
+  models=list(model=out,ncmeasure=mad.out,alpha=alpha,quantile=q, predict.fun=predict.fun, mad.predict.fun=mad.predict.fun)
+  outcome$models = models
+
+  return (outcome)
+}
+
+
+conformal.prediction <- function(x0,model, predict.fun, mnmeasure, mad.predict.fun,quantile) {
+    m = ncol(pred)
+    n0 = nrow(x0)
+    pred = matrix(predict.fun(model,x0),nrow=n0)
+    mad.x0 = mad.predict.fun(mnmeasure,x0)
+    for (l in 1:m) {
+      lo[,l] = pred[,l] - q * mad.x0
+      up[,l] = pred[,l] + q * mad.x0
+    }
+    return (list(pred=pred,lo=lo,up=up))
 }
