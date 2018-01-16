@@ -148,13 +148,13 @@ conformal.pred.split = function(x, y, x0, train.fun, predict.fun, alpha=0.1,
         quantiles=rbind(quantiles,c(a,conformal.quantile(sort(res[,l]),a)))
       }
     else {
-      quantiles=c(alpha,q)
+      quantiles=rbind(quantiles,c(alpha,q))
     }
   }
  
   outcome = list(pred=pred,lo=lo,up=up,fit=fit,split=i1)
   if (returnModels) {
-    models=list(model=out,ncmeasure=mad.out,quantiles=quantiles, predict.fun=predict.fun, mad.predict.fun=mad.predict.fun)
+    models=list(model=out,ncmeasure=mad.out,quantiles=as.data.frame(quantiles), predict.fun=predict.fun, mad.predict.fun=mad.predict.fun)
     outcome$models = models
   }
   return (outcome)
