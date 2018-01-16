@@ -150,17 +150,3 @@ conformal.pred.split = function(x, y, x0, train.fun, predict.fun, alpha=0.1,
   return (outcome)
 }
 
-
-conformal.prediction <- function(x0,model, predict.fun, mnmeasure, mad.predict.fun,quantile) {
-
-    n0 = nrow(x0)
-    pred = matrix(predict.fun(model,x0),nrow=n0)
-    mad.x0 = mad.predict.fun(mnmeasure,x0)
-    m = ncol(pred)
-    lo = up = matrix(0,n0,m)
-    for (l in 1:m) {
-      lo[,l] = pred[,l] - quantile * mad.x0
-      up[,l] = pred[,l] + quantile * mad.x0
-    }
-    return (list(pred=pred,lo=lo,up=up))
-}
